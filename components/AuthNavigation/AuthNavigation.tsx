@@ -1,11 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import css from "./AuthNavigation.module.css";
 import useAuth from "@/lib/hooks/useAuth";
 
 export default function AuthNavigation() {
   const { user, isAuthenticated, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      router.replace("/sign-in");
+      router.refresh();
+    }
+  };
 
   if (isAuthenticated && user) {
     return (
@@ -21,7 +32,7 @@ export default function AuthNavigation() {
           <button
             type="button"
             className={css.logoutButton}
-            onClick={() => void logout()}
+            onClick={() => void handleLogout()}
           >
             Logout
           </button>

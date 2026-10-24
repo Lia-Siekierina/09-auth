@@ -1,4 +1,5 @@
 import api from "./api";
+import type { AxiosResponse } from "axios";
 import { cookies } from "next/headers";
 import type { Note } from "@/types/note";
 import type { User } from "@/types/user";
@@ -61,7 +62,7 @@ export const getMe = async (): Promise<User> => {
 
 export const checkSession = async (
   cookieHeader?: string,
-): Promise<CheckSessionResponse> => {
+): Promise<AxiosResponse<CheckSessionResponse>> => {
   const cookie = cookieHeader ?? (await cookies()).toString();
 
   const response = await api.get<CheckSessionResponse>("/auth/session", {
@@ -70,5 +71,5 @@ export const checkSession = async (
     },
   });
 
-  return response.data;
+  return response;
 };

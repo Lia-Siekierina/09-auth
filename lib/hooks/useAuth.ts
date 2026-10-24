@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import { useRouter } from "next/navigation";
+
 import {
   checkSession,
   getMe,
@@ -16,8 +16,6 @@ export default function useAuth() {
   const clearIsAuthenticated = useAuthStore(
     (state) => state.clearIsAuthenticated,
   );
-
-  const router = useRouter();
 
   const checkAuth = useCallback(async () => {
     try {
@@ -43,10 +41,8 @@ export default function useAuth() {
       await logoutRequest();
     } finally {
       clearIsAuthenticated();
-      router.replace("/sign-in");
-      router.refresh();
     }
-  }, [clearIsAuthenticated, router]);
+  }, [clearIsAuthenticated]);
 
   return {
     user,

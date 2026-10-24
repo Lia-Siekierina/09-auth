@@ -1,11 +1,18 @@
-import type { ReactNode } from "react";
+"use client";
 
-export const dynamic = "force-dynamic";
+import { useEffect, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 
 type AuthLayoutProps = {
   children: ReactNode;
 };
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.refresh();
+  }, [router]);
+
   return <>{children}</>;
 }
