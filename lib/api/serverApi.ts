@@ -59,12 +59,14 @@ export const getMe = async (): Promise<User> => {
   return response.data;
 };
 
-export const checkSession = async (): Promise<CheckSessionResponse> => {
-  const cookieStore = await cookies();
+export const checkSession = async (
+  cookieHeader?: string,
+): Promise<CheckSessionResponse> => {
+  const cookie = cookieHeader ?? (await cookies()).toString();
 
   const response = await api.get<CheckSessionResponse>("/auth/session", {
     headers: {
-      Cookie: cookieStore.toString(),
+      Cookie: cookie,
     },
   });
 
