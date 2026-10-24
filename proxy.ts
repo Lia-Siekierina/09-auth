@@ -48,7 +48,7 @@ export async function proxy(request: NextRequest) {
         for (const cookieStr of cookieArray) {
           const { name, value, ...options } = parseSetCookie(cookieStr);
 
-          if (value) {
+          if (value !== undefined) {
             refreshedCookies.push({
               name,
               value,
@@ -62,14 +62,23 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  for (const cookie of refreshedCookies) {
-    request.cookies.set(cookie.name, cookie.value);
-  }
-
   const requestHeaders = new Headers(request.headers);
 
   if (refreshedCookies.length > 0) {
-    requestHeaders.set("cookie", request.cookies.toString());
+    const updatedCookies = new Map(
+      request.cookies.getAll().map(({ name, value }) => [name, value]),
+    );
+
+    for (const cookie of refreshedCookies) {
+      updatedCookies.set(cookie.name, cookie.value);
+    }
+
+    const cookieHeader = Array.from(
+      updatedCookies,
+      ([name, value]) => `${name}=${value}`,
+    ).join("; ");
+
+    requestHeaders.set("cookie", cookieHeader);
   }
 
   let response: NextResponse;
