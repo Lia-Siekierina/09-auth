@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { parseSetCookie } from "cookie";
 import { NextResponse, type NextRequest } from "next/server";
 import { checkSession } from "@/lib/api/serverApi";
@@ -26,17 +27,17 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const accessToken = request.cookies.get("accessToken")?.value;
-  const refreshToken = request.cookies.get("refreshToken")?.value;
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
 
   let isAuthenticated = Boolean(accessToken);
-
   const refreshedCookies: RefreshedCookie[] = [];
 
   if (!accessToken && refreshToken) {
     try {
-      const cookieHeader = request.headers.get("cookie") ?? "";
-      const sessionResponse = await checkSession(cookieHeader);
+      const sessionResponse = await checkSession(cookieStore.toString());
 
       isAuthenticated = sessionResponse.data.success;
 
@@ -66,7 +67,7 @@ export async function proxy(request: NextRequest) {
 
   if (refreshedCookies.length > 0) {
     const updatedCookies = new Map(
-      request.cookies.getAll().map(({ name, value }) => [name, value]),
+      cookieStore.getAll().map(({ name, value }) => [name, value]),
     );
 
     for (const cookie of refreshedCookies) {
