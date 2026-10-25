@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api/clientApi";
 import Modal from "@/components/Modal/Modal";
 import css from "@/app/(private routes)/notes/[id]/NoteDetails.module.css";
+import previewCss from "./NotePreview.module.css";
 
 export default function NotePreviewClient() {
   const router = useRouter();
@@ -19,6 +20,13 @@ export default function NotePreviewClient() {
 
   return (
     <Modal onClose={() => router.back()}>
+      <button
+        type="button"
+        className={previewCss.backBtn}
+        onClick={() => router.back()}
+      >
+        Back
+      </button>
       {isLoading && <p>Loading note...</p>}
 
       {isError && <p>Something went wrong. Please try again.</p>}
